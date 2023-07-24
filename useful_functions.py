@@ -38,17 +38,21 @@ def set_BB(collider, beam = 'lhcb1', bb_lr = False, HO_1 = False, HO_2 = False, 
     return collider
 def set_orbit_flat(collider):
     print('Setting optics as flat')
-    for ii in ['on_x1', 'on_sep1', 'on_x2h', 'on_sep2h', 'on_x2v', 'on_sep2v', 'on_x5', 
-               'on_sep5', 'on_x8h', 'on_sep8h', 'on_x8v', 'on_sep8v', 'on_disp', 
-               'on_alice_normalized', 'on_lhcb_normalized','on_sol_atlas', 'on_sol_cms', 
-               'on_sol_alice', 'i_oct_b1', 'i_oct_b2']:
+    for ii in ['on_x1', 'on_sep1', 'on_x2', 'on_sep2', 'on_x5',
+               'on_sep5', 'on_x8h', 'on_x8v', 'on_sep8h', 'on_sep8v',
+               'on_a1', 'on_o1', 'on_a2', 'on_o2', 'on_a5', 'on_o5', 'on_a8', 
+               'on_o8', 'on_disp', 'on_crab1', 'on_crab5', 'on_alice_normalized', 
+               'on_lhcb_normalized', 'on_sol_atlas', 'on_sol_cms', 'on_sol_alice', 
+               'i_oct_b1', 'i_oct_b2']:
         collider.vars[ii] = 0
     return collider
 def set_orbit_from_config(collider, config):
     print('Setting optics as from config')
-    for ii in ['on_x1', 'on_sep1', 'on_x2h', 'on_sep2h', 'on_x2v', 'on_sep2v', 'on_x5', 
-               'on_sep5', 'on_x8h', 'on_sep8h', 'on_x8v', 'on_sep8v', 'on_disp', 
-               'on_alice_normalized', 'on_lhcb_normalized', 'on_sol_atlas', 'on_sol_cms', 
-               'on_sol_alice', 'i_oct_b1', 'i_oct_b2']:
+    for ii in ['on_x1', 'on_sep1', 'on_x2', 'on_sep2', 'on_x5',
+               'on_sep5', 'on_x8h', 'on_x8v', 'on_sep8h', 'on_sep8v',
+               'on_a1', 'on_o1', 'on_a2', 'on_o2', 'on_a5', 'on_o5', 'on_a8', 
+               'on_o8', 'on_disp', 'on_crab1', 'on_crab5', 'on_alice_normalized', 
+               'on_lhcb_normalized', 'on_sol_atlas', 'on_sol_cms', 'on_sol_alice', 
+               'vrf400', 'lagrf400.b1', 'lagrf400.b2', 'i_oct_b1', 'i_oct_b2']:
         collider.vars[ii] = config['config_collider']['config_knobs_and_tuning']['knob_settings'][ii]
     return collider
