@@ -12,9 +12,9 @@ import NAFFlib
 # As a useful exercise to put in practice what we learned so far, we will now
 # track particles, obtain the tunes and plot the footprint of the particles
 # Let's setup the collider as always
-collider = xt.Multiline.from_json('collider.json')
+collider = xt.Multiline.from_json('../data/collider.json')
 collider.build_trackers()
-with open('config.yaml', "r") as fid:
+with open('../data/config.yaml', "r") as fid:
         config = yaml.safe_load(fid)
     
 twiss_b1 = collider['lhcb1'].twiss()

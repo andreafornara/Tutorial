@@ -8,7 +8,7 @@ import yaml
 # %%
 # First of all we need to load our collider
 # In the collider 2 lines are defined: lhcb1 and lhcb2
-collider = xt.Multiline.from_json('collider.json')
+collider = xt.Multiline.from_json('../data/collider.json')
 # %%
 # Let's look at attributes and methods of the collider
 print(dir(collider))
@@ -142,7 +142,7 @@ print(f'The crossing angle at IP8 is {theta_crossing_IP8*1e6} urad')
 #We retrieve the knob value!
 # %%
 #Now let's change the knobs from a config file
-with open('config.yaml', "r") as fid:
+with open('../data/config.yaml', "r") as fid:
         config = yaml.safe_load(fid)
     
 def set_orbit_from_config(collider, config):
@@ -182,6 +182,3 @@ for ii in collider['lhcb1'].element_names:
         ax[1].text(twiss_b1[['s'],ii], max(ax[1].get_yticks()), ii, fontsize = fontsize, horizontalalignment='center')
 plt.tight_layout()
 #Now we activated different knobs!
-
-
-# %%

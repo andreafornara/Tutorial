@@ -2,3 +2,10 @@
 for f in *.py; do
     ipynb-py-convert $f ../examples/${f%.*}.ipynb
 done
+
+
+# for all ipnb in ../examples/ run them
+# Path: source/convert_them.sh
+for f in ../examples/*.ipynb; do
+    jupyter nbconvert --to notebook --execute $f
+done

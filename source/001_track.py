@@ -9,12 +9,12 @@ import yaml
 # %%
 # Now we want to start tracking particles!
 # First of all let's load the collider and build the trackers
-collider = xt.Multiline.from_json('collider.json')
+collider = xt.Multiline.from_json('../data/collider.json')
 collider.build_trackers()
 # %%
 # Then we want to set the optics from a config file
 # We will use the optics from the HL-LHC config
-with open('config.yaml', "r") as fid:
+with open('../data/config.yaml', "r") as fid:
         config = yaml.safe_load(fid)
     
 def set_orbit_from_config(collider, config):
