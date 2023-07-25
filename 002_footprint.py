@@ -5,7 +5,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import xpart as xp
 import xobjects as xo
-import useful_functions as useful_functions
 import yaml
 import itertools
 import NAFFlib

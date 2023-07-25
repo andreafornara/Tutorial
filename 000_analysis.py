@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import xpart as xp
-import useful_functions as useful_functions
 import yaml
 # %%
 # First of all we need to load our collider
