@@ -2,7 +2,7 @@
 A tutorial to learn a few things about Xsuite
 First of all 
 ```
-source make_it
+source make_it.sh
 ```
 to create a miniforge .
 
