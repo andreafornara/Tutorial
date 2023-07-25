@@ -7,12 +7,22 @@ import xpart as xp
 import yaml
 
 # %%
-# First of all we need to load our collider
-# In the collider 2 lines are defined: lhcb1 and lhcb2
+'''
+# Example of analysis of the LHC lattice
+## Importing a collider
+First of all we need to load our collider
+In the collider, two lines are defined: `lhcb1` and `lhcb2`
+'''
+
+# %%
 collider = xt.Multiline.from_json('../data/collider.json')
 
 # %%
-# Let's look at attributes and methods of the collider
+'''
+Let's look at attributes and methods of the collider
+'''
+
+# %%
 print(dir(collider))
 
 # %%
