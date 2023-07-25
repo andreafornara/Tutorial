@@ -17,20 +17,13 @@ collider.build_trackers()
 with open('config.yaml', "r") as fid:
         config = yaml.safe_load(fid)
     
-def set_orbit_from_config(collider, config):
-    print('Setting optics as from config')
-    for ii in ['on_x1', 'on_sep1', 'on_x2', 'on_sep2', 'on_x5',
-               'on_sep5', 'on_x8h', 'on_x8v', 'on_sep8h', 'on_sep8v',
-               'on_a1', 'on_o1', 'on_a2', 'on_o2', 'on_a5', 'on_o5', 'on_a8', 
-               'on_o8', 'on_disp', 'on_crab1', 'on_crab5', 'on_alice_normalized', 
-               'on_lhcb_normalized', 'on_sol_atlas', 'on_sol_cms', 'on_sol_alice', 
-               'vrf400', 'lagrf400.b1', 'lagrf400.b2']:
-        collider.vars[ii] = config['config_collider']['config_knobs_and_tuning']['knob_settings'][ii]
-set_orbit_from_config(collider, config)
 twiss_b1 = collider['lhcb1'].twiss()
 ctx = xo.ContextCpu()
+# First of all we change the octupole strength
+collider.vars['i_oct_b1'] = 250
 # %%
 # Now we define the amplitudes and the angles of the particles
+twiss_b1 = collider['lhcb1'].twiss()
 r_min = 1.1
 r_max = 6
 radial_list = np.linspace(r_min, r_max, 40, endpoint=False)
@@ -110,25 +103,5 @@ plt.ylabel(r'$q_y$', size = 10)
 plt.legend(fontsize = 10)
 plt.title('Footprint', size = 10)
 plt.grid()
-# %%
-# This exercise is made automatic thanks to Xsuite!
-# We can use the get_footprint method of the line
-collider.vars['i_oct_b1'] = 0
-twiss_b1 = collider['lhcb1'].twiss()
-fp0_jgrid = line.get_footprint(nemitt_x=normal_emitt_x, nemitt_y=normal_emitt_y,
-                         mode='polar')
-plt.plot(twiss_b1["mux"][-1]%1, twiss_b1["muy"][-1]%1, '*', markersize = 10, label = 'Machine Tune, no octupole current')
 
-fp0_jgrid.plot(color='k')
-
-# We can also change the octupole current and see the effect on the footprint
-collider.vars['i_oct_b1'] = -150
-twiss_b1 = collider['lhcb1'].twiss()
-fp0_jgrid = line.get_footprint(nemitt_x=normal_emitt_x, nemitt_y=normal_emitt_y,
-                         mode='polar')
-plt.plot(twiss_b1["mux"][-1]%1, twiss_b1["muy"][-1]%1, '*', markersize = 10, label = 'Machine Tune, octupole current = -150 A')
-
-fp0_jgrid.plot(color='k')
-plt.legend(fontsize = 10)
-plt.grid()
-# %%
+#Now repeat the exercise for an octupolar current of -250 A!

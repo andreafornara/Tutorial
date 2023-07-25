@@ -90,7 +90,7 @@ gaussian_bunch = xp.generate_matched_gaussian_bunch(
         num_particles = N_particles, total_intensity_particles = bunch_intensity,
         nemitt_x = normal_emitt_x, nemitt_y=normal_emitt_y, sigma_z = sigma_z,
         particle_ref = particle_ref,
-        tracker = collider['lhcb1'].tracker)
+        line = collider['lhcb1'])
 
 # %%
 # We can plot the bunch in the transverse plane
