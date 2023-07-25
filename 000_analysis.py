@@ -10,8 +10,23 @@ import yaml
 # First of all we need to load our collider
 # In the collider 2 lines are defined: lhcb1 and lhcb2
 collider = xt.Multiline.from_json('collider.json')
-
 # %%
+# Let's look at attributes and methods of the collider
+print(dir(collider))
+# %%
+# We can see that we have two lines, lhcb1 and lhcb2, we look at the lhcb1 line
+collider.lhcb1.to_dict()
+# We can look at the attributes and methods of the elements
+# %%
+# Let's look at the attributes and methods of the one element of the lhcb1 line
+collider.lhcb1.to_dict()['elements']['mqwa.a4r3.b1..1']
+# We can se that this is a multipole and we can get, for example, the quadrupole strength
+print(f'The quadrupole strength is {collider.lhcb1.to_dict()["elements"]["mqwa.a4r3.b1..1"]["knl"][1]}')
+# %%
+# In the dictionary we have also informations on the reference particle
+collider.lhcb1.to_dict()['particle_ref']
+# %%
+# Now we want to see some optics quantities
 # In Xsuite a Twiss is performed by tracking a particle with a given initial condition (0,0,0,0,0,0 by default) 
 # We need to build the trackers for each line
 # WARNING: elements CANNOT be removed/added after the tracker is built
@@ -59,8 +74,8 @@ plt.tight_layout()
 #We can also have a look at the closed orbit
 fig, ax = plt.subplots(2,1)
 fig.set_size_inches(18.5, 10.5)
-fig.suptitle('Closed Orbit')
 fontsize = 20
+fig.suptitle('Closed Orbit', fontsize = fontsize)
 ax[0].plot(twiss_b1['s'], twiss_b1['x'], label = r'x')
 ax[0].legend(fontsize = fontsize)
 ax[0].set_ylabel(r'x [m]', fontsize = fontsize)
