@@ -1,4 +1,13 @@
 # %%
+'''
+# Example of analysis of the LHC lattice
+## Importing a collider
+First of all we need to load our collider. 
+This is a json file that contains all the information on the collider.
+Namely it contains the two lines `lhcb1` and `lhcb2` corresponding to the two beams.
+'''
+
+# %%
 import xtrack as xt
 import numpy as np
 import pandas as pd
@@ -6,15 +15,6 @@ import matplotlib.pyplot as plt
 import xpart as xp
 import yaml
 
-# %%
-'''
-# Example of analysis of the LHC lattice
-## Importing a collider
-First of all we need to load our collider
-In the collider, two lines are defined: `lhcb1` and `lhcb2`
-'''
-
-# %%
 collider = xt.Multiline.from_json('../data/collider.json')
 
 # %%
