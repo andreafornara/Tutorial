@@ -10,7 +10,7 @@ import yaml
 # %%
 # Now we want to start tracking particles!
 # First of all let's load the collider and build the trackers
-collider = xt.Multiline.from_json('../data/collider.json')
+collider = xt.Multiline.from_json('../data/collider_thin.json')
 collider.build_trackers()
 
 # %%

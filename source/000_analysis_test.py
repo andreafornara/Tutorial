@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import xpart as xp
 import yaml
 
-collider = xt.Multiline.from_json('../data/collider.json')
+collider = xt.Multiline.from_json('../data/collider_thin.json')
 
 # %%
 '''
