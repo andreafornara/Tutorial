@@ -28,6 +28,7 @@ jobs:
         run: |
           git config --global user.email "guido.sterbini@cern.ch"
           git config --global user.name "sterbini"
+          git checkout main
           git commit -am "Auto updating the files"
       - name: pull
         run: git pull
