@@ -26,8 +26,8 @@ jobs:
           source convert_them.sh 
       - name: stage and  changed files
         run: |
-          git config --global user.email "guido.sterbini@cern.ch"
-          git config --global user.name "sterbini"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
           git checkout main
           git commit -am "Auto updating the files"
       - name: push
