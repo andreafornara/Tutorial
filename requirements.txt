@@ -12,3 +12,4 @@ cpymad
 xsuite
 pyabel
 ipynb-py-convert
+PyNAFF
