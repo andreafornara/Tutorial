@@ -1,0 +1,41 @@
+# Configuration for tuning of the collider
+config_collider:
+
+  config_knobs_and_tuning:
+    knob_settings:
+      # Orbit knobs
+      on_x1: 250 # [urad]
+      on_sep1: 0 # [mm]
+      on_x2: -170 # [urad]
+      on_sep2: 0.138 # 0.1443593672910653 # 0.138 # [mm]
+      on_x5: 250 # [urad]
+      on_sep5: 0 # [mm]
+      on_x8h: 0.0
+      on_x8v: 170
+      on_sep8h: -0.01 # different from 0 so that the levelling algorithm is not stuck
+      on_sep8v: 0.01 # idem
+      on_a1: 0 # [urad]
+      on_o1: 0 # [mm]
+      on_a2: 0 # [urad]
+      on_o2: 0 # [mm]
+      on_a5: 0 # [urad]
+      on_o5: 0 # [mm]
+      on_a8: 0 # [urad]
+      on_o8: 0 # [mm]
+      on_disp: 1 # Value to choose could be optics-dependent
+
+      # Crab cavities
+      on_crab1: -190 # [urad]
+      on_crab5: -190 # [urad]
+
+      # Magnets of the experiments
+      on_alice_normalized: 1
+      on_lhcb_normalized: 1
+      on_sol_atlas: 0
+      on_sol_cms: 0
+      on_sol_alice: 0
+
+      # RF voltage and phases
+      vrf400: 16.0 # [MV]
+      lagrf400.b1: 0.5 # [rad]
+      lagrf400.b2: 0. # [rad]
