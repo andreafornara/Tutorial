@@ -5,25 +5,41 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import xpart as xp
 import yaml
+
 # %%
-# First of all we need to load our collider
-# In the collider 2 lines are defined: lhcb1 and lhcb2
-collider = xt.Multiline.from_json('collider.json')
+'''
+# Example of analysis of the LHC lattice
+## Importing a collider
+First of all we need to load our collider
+In the collider, two lines are defined: `lhcb1` and `lhcb2`
+'''
+
 # %%
-# Let's look at attributes and methods of the collider
+collider = xt.Multiline.from_json('../data/collider.json')
+
+# %%
+'''
+Let's look at attributes and methods of the collider
+'''
+
+# %%
 print(dir(collider))
+
 # %%
 # We can see that we have two lines, lhcb1 and lhcb2, we look at the lhcb1 line
 collider.lhcb1.to_dict()
 # We can look at the attributes and methods of the elements
+
 # %%
 # Let's look at the attributes and methods of the one element of the lhcb1 line
 collider.lhcb1.to_dict()['elements']['mqwa.a4r3.b1..1']
 # We can se that this is a multipole and we can get, for example, the quadrupole strength
 print(f'The quadrupole strength is {collider.lhcb1.to_dict()["elements"]["mqwa.a4r3.b1..1"]["knl"][1]}')
+
 # %%
 # In the dictionary we have also informations on the reference particle
 collider.lhcb1.to_dict()['particle_ref']
+
 # %%
 # Now we want to see some optics quantities
 # In Xsuite a Twiss is performed by tracking a particle with a given initial condition (0,0,0,0,0,0 by default) 
@@ -31,15 +47,18 @@ collider.lhcb1.to_dict()['particle_ref']
 # WARNING: elements CANNOT be removed/added after the tracker is built
 # you need to deprecate the tracker before modifying the line and build it again
 collider.build_trackers()
+
 # %%
 # Now we can perform the Twiss of both lines
 # We will concentrate on the lhcb1 line but the same procedure can be applied to the lhcb2 line
 twiss_b1 = collider['lhcb1'].twiss()
 twiss_b2 = collider['lhcb2'].twiss().reverse()
+
 # %%
 # The twiss is a dataframe with the following columns:
 print(twiss_b1.cols)
-#get a pandas dataframe with the twiss data
+# get a pandas dataframe with the twiss data
+
 # %%
 #First of all let's plot the beta functions!
 fig, ax = plt.subplots(2,1)
@@ -131,7 +150,6 @@ for ii in collider['lhcb1'].element_names:
         ax[1].axvline(twiss_b1[['s'],ii], color = 'red', linestyle = '--', alpha = 0.3)
         ax[1].text(twiss_b1[['s'],ii], max(ax[1].get_yticks()), ii, fontsize = fontsize, horizontalalignment='center')
 plt.tight_layout()
-
 #Is it what we expected?
 max_y = np.max(twiss_b1['y'])
 min_y = np.min(twiss_b1['y'])
@@ -140,9 +158,10 @@ s_min_y = twiss_b1['s'][np.argmin(twiss_b1['y'])]
 theta_crossing_IP8 = (max_y-min_y)/(s_max_y-s_min_y)
 print(f'The crossing angle at IP8 is {theta_crossing_IP8*1e6} urad')
 #We retrieve the knob value!
+
 # %%
 #Now let's change the knobs from a config file
-with open('config.yaml', "r") as fid:
+with open('../data/config.yaml', "r") as fid:
         config = yaml.safe_load(fid)
     
 def set_orbit_from_config(collider, config):
@@ -182,6 +201,3 @@ for ii in collider['lhcb1'].element_names:
         ax[1].text(twiss_b1[['s'],ii], max(ax[1].get_yticks()), ii, fontsize = fontsize, horizontalalignment='center')
 plt.tight_layout()
 #Now we activated different knobs!
-
-
-# %%

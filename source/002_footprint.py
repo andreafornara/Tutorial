@@ -8,19 +8,21 @@ import xobjects as xo
 import yaml
 import itertools
 import NAFFlib
+
 # %%
 # As a useful exercise to put in practice what we learned so far, we will now
 # track particles, obtain the tunes and plot the footprint of the particles
 # Let's setup the collider as always
-collider = xt.Multiline.from_json('collider.json')
+collider = xt.Multiline.from_json('../data/collider.json')
 collider.build_trackers()
-with open('config.yaml', "r") as fid:
+with open('../data/config.yaml', "r") as fid:
         config = yaml.safe_load(fid)
     
 twiss_b1 = collider['lhcb1'].twiss()
 ctx = xo.ContextCpu()
 # First of all we change the octupole strength
 collider.vars['i_oct_b1'] = 250
+
 # %%
 # Now we define the amplitudes and the angles of the particles
 twiss_b1 = collider['lhcb1'].twiss()
@@ -53,6 +55,7 @@ y_in_sigmas = np.array(y_in_sigmas)
 # We define the emittances
 normal_emitt_x = 2.5e-6
 normal_emitt_y = 2.5e-6
+
 # %%
 line = collider['lhcb1']
 particle_ref = xp.Particles(
@@ -64,12 +67,14 @@ particles = xp.build_particles(
     x_norm=x_in_sigmas, px_norm=px_in_sigmas,
     y_norm=y_in_sigmas, py_norm=py_in_sigmas,
     nemitt_x=normal_emitt_x, nemitt_y = normal_emitt_y)
+
 # %%
 fig, ax = plt.subplots(figsize=(10, 10))
 plt.plot(x_in_sigmas,y_in_sigmas,'.')
 plt.xlabel(r'x[$\sigma$]', size = 20)
 plt.ylabel(r'y[$\sigma$]', size = 20)
 plt.grid()
+
 # %%
 # This time we need to save all the values of the coordinates at each turn
 # so that we can extract the tunes
@@ -103,5 +108,4 @@ plt.ylabel(r'$q_y$', size = 10)
 plt.legend(fontsize = 10)
 plt.title('Footprint', size = 10)
 plt.grid()
-
 #Now repeat the exercise for an octupolar current of -250 A!

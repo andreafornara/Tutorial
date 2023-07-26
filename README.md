@@ -1,10 +1,19 @@
 # Tutorial
-A tutorial to learn a few things about Xsuite
-First of all 
+A tutorial to learn a few things about Xsuite.
+
+First of all, you can install your own miniforge with the following command:
 ```
 source make_it.sh
 ```
-to create a miniforge .
+This will create a miniforge in the current directory, and install the Xsuite environment.
 
-The three codes that can be explored 000_analysis.py, 001_track.py, 002_footprint.py .
-Each of this can be used interactively in VSCode, just open it and launch each cell .
+You can find the examples in the `examples` folder.
+
+If you want to edit this folder, please fork it and modified the files in `source`.
+Once you are done, you can run 
+```
+source convert_them.sh
+```
+from the `source` folder.
+
+Each of this can be used interactively in VSCode, just open it and execute/edit each cell.
