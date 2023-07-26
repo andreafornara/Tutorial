@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import xpart as xp
 import yaml
 
-collider = xt.Multiline.from_json('../data/collider.json')
+collider = xt.Multiline.from_json('../data/collider_thin.json')
 
 # %%
 '''
@@ -27,18 +27,18 @@ print(dir(collider))
 
 # %%
 # We can see that we have two lines, lhcb1 and lhcb2, we look at the lhcb1 line
-collider.lhcb1.to_dict()
+my_dict = collider.lhcb1.to_dict()
 # We can look at the attributes and methods of the elements
 
 # %%
 # Let's look at the attributes and methods of the one element of the lhcb1 line
-collider.lhcb1.to_dict()['elements']['mqwa.a4r3.b1..1']
+my_dict['elements']['mqwa.a4r3.b1..1']
 # We can se that this is a multipole and we can get, for example, the quadrupole strength
-print(f'The quadrupole strength is {collider.lhcb1.to_dict()["elements"]["mqwa.a4r3.b1..1"]["knl"][1]}')
+print(f'The quadrupole strength is {my_dict["elements"]["mqwa.a4r3.b1..1"]["knl"][1]}')
 
 # %%
 # In the dictionary we have also informations on the reference particle
-collider.lhcb1.to_dict()['particle_ref']
+my_dict['particle_ref']
 
 # %%
 # Now we want to see some optics quantities
