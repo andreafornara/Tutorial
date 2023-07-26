@@ -54,18 +54,18 @@ fig = plt.figure(figsize=(20,10))
 #gridspec.GridSpec(3,3)
 fontsize = 10
 ax1 = plt.subplot2grid((3,3), (0,0), colspan=3, rowspan=1)
-plt.plot(twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'][0:300],0*twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'][0:300],'k')
-plt.plot(twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'][0:300],twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['x'][0:300]*1e4,'green',label='x')
+plt.plot(twiss_b1.rows['s.arc.12.b1':'e.arc.12.b1', ]['s'],0*twiss_b1.rows['s.arc.12.b1':'e.arc.12.b1', ]['s'],'k')
+# plt.plot(twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'][0:300],twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['x'][0:300]*1e4,'green',label='x')
 
 my_dict = collider.lhcb1.to_dict()
-for ii in (twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['name']):
+for ii in (twiss_b1.rows['s.arc.12.b1':'e.arc.12.b1', ]['name']):
     if((ii.startswith('mq.')) and ii.endswith('b1')):
-        print(ii)
+        # print(ii)
         aux =my_dict['elements'][ii]
         k1l = my_dict['elements'][ii]['k1']*my_dict['elements'][ii]['length']
         plotLatticeSeries(plt.gca(),twiss_b1, ii, aux, height=k1l, v_offset=k1l/2, color='red')
-        if(ii == 'mq.14r3.b1'):
-            break
+        # if(ii == 'mq.14r3.b1'):
+        #     break
 ax1.set_ylabel(r'$K1L$ [1/m]', color='red')  # we already handled the x-label with ax1
 ax1.tick_params(axis='y', labelcolor='red')
 
@@ -74,23 +74,23 @@ ax1.tick_params(axis='y', labelcolor='red')
 
 #ax1.set_xlim(twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'][0],600)
 
-
-for ii in (twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['name']):
+ax2 = ax1.twinx() 
+ax2.set_ylim(-10,10)
+for ii in (twiss_b1.rows['s.arc.12.b1':'e.arc.12.b1', ]['name']):
     if((ii.startswith('mb.')) and ii.endswith('b1')):
-        print(ii)
+        # print(ii)
         aux =my_dict['elements'][ii]
         kl = my_dict['elements'][ii]['k0']*my_dict['elements'][ii]['length']
-        plotLatticeSeries(plt.gca(),twiss_b1, ii, aux, height=kl, v_offset=kl/2, color='blue')
-        if(ii == 'mb.c15r3.b1'):
-            break
+        plotLatticeSeries(plt.gca(),twiss_b1, ii, aux, height=kl*1000, v_offset=kl/2*1000, color='blue')
+        # if(ii == 'mb.c15r3.b1'):
+        #     break
  # instantiate a second axes that shares the same x-axis
 color = 'blue'
-# ax2.set_ylabel(r'$\theta$=K0L [rad]', color=color)  # we already handled the x-label with ax1
-# ax2.tick_params(axis='y', labelcolor=color)
-plt.title('LHC lattice in the arc 34', fontsize = fontsize)
+ax2.set_ylabel(r'$\theta$=K0L [mrad]', color=color)  # we already handled the x-label with ax1
+ax2.tick_params(axis='y', labelcolor=color)
+plt.title('LHC lattice in the arc 12', fontsize = fontsize)
 plt.xlabel('s [m]', fontsize = fontsize)
-plt.axvline(twiss_b1['s', 'mq.12r3.b1' ], color = 'b', label = 'mq.12r3.b1')
-plt.axvline(twiss_b1['s', 'mq.12r3.b1_exit' ], color = 'r', label = 'mq.12r3.b1_exit')
+
 plt.legend(fontsize = fontsize)
 
 plt.grid()
