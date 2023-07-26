@@ -11,4 +11,5 @@ pytest
 cpymad
 xsuite
 pyabel
+NAFFlib
 ipynb-py-convert
