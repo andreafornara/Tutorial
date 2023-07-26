@@ -24,16 +24,8 @@ jobs:
         run: |
           cd source
           source convert_them.sh 
-      - name: switching from HTTPS to SSH
-        run: |
-          git remote set-url origin ${{ secrets.ssh }}
-      - name: check for changes
-        run: |
-          git status
       - name: stage and  changed files
         run: |
           git commit -am "Auto updating TODO.txt"
-      - name: fetch from master
-        run: git fetch origin master
-      - name: push code to master
-        run: git push origin HEAD:master
+      - name: pull
+        run: git pull
