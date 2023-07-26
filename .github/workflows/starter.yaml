@@ -26,6 +26,8 @@ jobs:
           source convert_them.sh 
       - name: stage and  changed files
         run: |
-          git commit -am "Auto updating TODO.txt"
+          git config --global user.email "guido.sterbini@cern.ch"
+          git config --global user.name "sterbini"
+          git commit -am "Auto updating the files"
       - name: pull
         run: git pull
