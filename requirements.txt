@@ -1,0 +1,14 @@
+ipython
+jupyterlab
+numpy
+scipy
+pandas
+awkward
+matplotlib
+pyarrow
+pyyaml
+pytest
+cpymad
+xsuite
+pyabel
+ipynb-py-convert
