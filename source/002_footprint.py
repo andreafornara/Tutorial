@@ -7,7 +7,7 @@ import xpart as xp
 import xobjects as xo
 import yaml
 import itertools
-import NAFFlib
+#import NAFFlib
 
 # %%
 # As a useful exercise to put in practice what we learned so far, we will now
@@ -91,21 +91,21 @@ y = collider['lhcb1'].record_last_track.y
 # We can print the values of the coordinates for the first particle
 print('The x coordinate of the first particle is ', x[0,:])
 # We can now compute the tunes with the NAFF algorithm
-qx_i = []
-qy_i = []
-for ii in range(len(x)):
-    qx_i.append(NAFFlib.get_tune(x[ii,:]))
-    qy_i.append(NAFFlib.get_tune(y[ii,:]))
-qx_i = np.array(qx_i)
-qy_i = np.array(qy_i)
-# plot the tunes
-fig, ax = plt.subplots(figsize=(5, 5))
-plt.plot(qx_i, qy_i, '.')
-#plot a star at twiss_b1["mux"][-1] and twiss_b1["muy"][-1]
-plt.plot(twiss_b1["mux"][-1]%1, twiss_b1["muy"][-1]%1, '*', markersize = 10, label = 'Machine Tune')
-plt.xlabel(r'$q_x$', size = 10)
-plt.ylabel(r'$q_y$', size = 10)
-plt.legend(fontsize = 10)
-plt.title('Footprint', size = 10)
-plt.grid()
+# qx_i = []
+# qy_i = []
+# for ii in range(len(x)):
+#     qx_i.append(NAFFlib.get_tune(x[ii,:]))
+#     qy_i.append(NAFFlib.get_tune(y[ii,:]))
+# qx_i = np.array(qx_i)
+# qy_i = np.array(qy_i)
+# # plot the tunes
+# fig, ax = plt.subplots(figsize=(5, 5))
+# plt.plot(qx_i, qy_i, '.')
+# #plot a star at twiss_b1["mux"][-1] and twiss_b1["muy"][-1]
+# plt.plot(twiss_b1["mux"][-1]%1, twiss_b1["muy"][-1]%1, '*', markersize = 10, label = 'Machine Tune')
+# plt.xlabel(r'$q_x$', size = 10)
+# plt.ylabel(r'$q_y$', size = 10)
+# plt.legend(fontsize = 10)
+# plt.title('Footprint', size = 10)
+# plt.grid()
 #Now repeat the exercise for an octupolar current of -250 A!
