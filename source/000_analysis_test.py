@@ -32,7 +32,8 @@ my_dict = collider.lhcb1.to_dict()
 
 # %%
 # Let's look at the attributes and methods of the one element of the lhcb1 line
-my_dict['elements']['mqwa.a4r3.b1..1']
+collider.lhcb1.to_dict()['elements']['mqwa.a4r3.b1..1']
+# %%
 # We can se that this is a multipole and we can get, for example, the quadrupole strength
 print(f'The quadrupole strength is {my_dict["elements"]["mqwa.a4r3.b1..1"]["knl"][1]}')
 
