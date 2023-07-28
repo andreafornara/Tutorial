@@ -27,18 +27,19 @@ print(dir(collider))
 
 # %%
 # We can see that we have two lines, lhcb1 and lhcb2, we look at the lhcb1 line
-collider.lhcb1.to_dict()
+my_dict = collider.lhcb1.to_dict()
 # We can look at the attributes and methods of the elements
 
 # %%
 # Let's look at the attributes and methods of the one element of the lhcb1 line
-collider.lhcb1.to_dict()['elements']['mqwa.a4r3.b1..1']
+#collider.lhcb1.to_dict()['elements']['mqwa.a4r3.b1..1']
+# %%
 # We can se that this is a multipole and we can get, for example, the quadrupole strength
-print(f'The quadrupole strength is {collider.lhcb1.to_dict()["elements"]["mqwa.a4r3.b1..1"]["knl"][1]}')
+print('The quadrupole strength is', my_dict["elements"]["mqwa.a4r3.b1..1"]["knl"][1])
 
 # %%
 # In the dictionary we have also informations on the reference particle
-collider.lhcb1.to_dict()['particle_ref']
+my_dict['particle_ref']
 
 # %%
 # Now we want to see some optics quantities
@@ -114,8 +115,8 @@ plt.tight_layout()
 
 # %%
 #All the useful informations are stored in the twiss dataframe, for example the tune...
-print(f'The horizontal tune is {twiss_b1["mux"][-1]}')
-print(f'The vertical tune is {twiss_b1["muy"][-1]}')
+print('The horizontal tune is', twiss_b1["mux"][-1])
+print('The vertical tune is', twiss_b1["muy"][-1])
 
 # %%
 # We want to change the optics of the line
@@ -125,7 +126,7 @@ print(f'The vertical tune is {twiss_b1["muy"][-1]}')
 # We change the (half) crossing angle at IP8 to 170 urad
 collider.vars['on_x8v'] = 150
 # We can check that the knob has been changed
-print(f'The knob on_x1 is now {collider.vars["on_x8v"]._value} urad')
+print('The knob on_x1 is now',collider.vars["on_x8v"]._value)
 # We can now perform the twiss again
 twiss_b1 = collider['lhcb1'].twiss()
 # And plot the closed orbit
@@ -156,7 +157,7 @@ min_y = np.min(twiss_b1['y'])
 s_max_y = twiss_b1['s'][np.argmax(twiss_b1['y'])]
 s_min_y = twiss_b1['s'][np.argmin(twiss_b1['y'])]
 theta_crossing_IP8 = (max_y-min_y)/(s_max_y-s_min_y)
-print(f'The crossing angle at IP8 is {theta_crossing_IP8*1e6} urad')
+print('The crossing angle at IP8 is', theta_crossing_IP8*1e6)
 #We retrieve the knob value!
 
 # %%

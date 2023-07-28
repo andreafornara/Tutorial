@@ -23,7 +23,6 @@ ax[0].plot(twiss_b1['s'], twiss_b1['betx'], label = r'$\beta_{x}$')
 ax[0].set_ylabel(r'$\beta_{x}$ [m]', fontsize = fontsize)
 ax[0].grid()
 ax[0].legend(fontsize = fontsize)
-
 ax[1].plot(twiss_b1['s'], twiss_b1['bety'], label = r'$\beta_{y}$')
 ax[1].set_ylabel(r'$\beta_{y}$ [m]', fontsize = fontsize)
 ax[1].set_xlabel('s [m]', fontsize = fontsize)
