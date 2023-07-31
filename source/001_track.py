@@ -8,14 +8,19 @@ import xobjects as xo
 import yaml
 
 # %%
-# Now we want to start tracking particles!
-# First of all let's load the collider and build the trackers
+'''
+Now we want to start tracking particles!
+First of all let's load the collider and build the trackers.
+
+Then we want to set the optics from a config file.
+We will use the optics from the HL-LHC config.
+'''
+
+# %%
 collider = xt.Multiline.from_json('../data/collider_thin.json')
 collider.build_trackers()
 
 # %%
-# Then we want to set the optics from a config file
-# We will use the optics from the HL-LHC config
 with open('../data/config.yaml', "r") as fid:
         config = yaml.safe_load(fid)
     
@@ -28,35 +33,59 @@ def set_orbit_from_config(collider, config):
                'on_lhcb_normalized', 'on_sol_atlas', 'on_sol_cms', 'on_sol_alice', 
                'vrf400', 'lagrf400.b1', 'lagrf400.b2']:
         collider.vars[ii] = config['config_collider']['config_knobs_and_tuning']['knob_settings'][ii]
-
 set_orbit_from_config(collider, config)
-
 twiss_b1 = collider['lhcb1'].twiss()
 
 # %%
-# First of all we define a context
+'''
+First of all we define a context then we can define a single particle (for example).
+'''
+
+# %%
 ctx = xo.ContextCpu()
-# Then we can define a single particle 
 my_particle = xp.Particles(
                     mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, x = 1e-6)
-# Let's look at it
+
+# %%
+'''
+Let's look at this particle:
+'''
+
+# %%
 my_particle.show()
-# We can also access the particle attributes directly
-# IMPORTANT: it is better to use the context to access the attributes 
-# to avoid conflicts when using GPU contexts
+
+# %%
+'''
+We can also access the particle attributes directly.
+
+IMPORTANT: it is better to use the context to access the attributes 
+to avoid conflicts when using GPU contexts
+'''
+
+# %%
 print(f'The particle energy is {ctx.nparray_from_context_array(my_particle.energy0)} eV')
 print(f'The particle x position is {ctx.nparray_from_context_array(my_particle.x)} m')
 
 # %%
-# Now we want to track the particle, we can do it with the tracker method
-# IMPORTANT: each element of the collider can track particles separately!
-# For example let's take a crab cavity and track the particle through it
-# We can access the crab cavity with the following command
+'''
+Now we want to track the particle, we can do it with the tracker method.
+
+IMPORTANT: each element of the collider can track particles separately!
+
+For example let's take a crab cavity and track the particle through it
+We can access the crab cavity with the following command:
+'''
+
+# %%
 my_crab = collider["lhcb1"].element_dict['acfgah.4bl1.b1']
 print(my_crab)
 
 # %%
-# And we can track the particle with the following command
+'''
+And we can track the particle with the .track() method of the element:
+'''
+
+# %%
 my_particle = xp.Particles(
                     mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, zeta = 0.075)
 print('---------Particle before tracking------')
@@ -64,19 +93,30 @@ print(f'The particle px is {ctx.nparray_from_context_array(my_particle.px)}')
 my_crab.track(my_particle)
 print('---------Particle after tracking------')
 print(f'The particle px is {ctx.nparray_from_context_array(my_particle.px)}')
-# The particle px has changed! This is because the particle is at zeta!=0
-# What if we want to track the particle at zeta=0?
-# We can do it with the following command
+
+# %%
+'''
+The particle px has changed! This is because the particle is at zeta!=0
+What if we want to track the particle at zeta=0?
+We can do it with the following command
+'''
+
+# %%
 my_particle = xp.Particles(
                     mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, zeta = 0)    
 my_crab.track(my_particle)
 print('---------Particle after tracking at zeta=0------')
 print(f'The particle px is {ctx.nparray_from_context_array(my_particle.px)}')
-# px changed but it's practically zero
 
 # %%
-#Now for something more complicated we can track the particle through the whole line
-#We can do it with the following command
+'''
+The change in px is practically zero.
+Now for something more complicated we can track the particle through the whole line.
+
+We can do it with the .track() method of the line:
+'''
+
+# %%
 my_particle = xp.Particles(
                     mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9)
 collider['lhcb1'].track(my_particle)
@@ -84,8 +124,12 @@ print('---------Particle after tracking through the whole line------')
 my_particle.show()
 
 # %%
-# Now for a more realistic example we want to track a gaussian bunch of particles
-# Matched to the RF bucket
+'''
+Now for a more realistic example we want to track a gaussian bunch of particles
+Matched to the RF bucket
+'''
+
+# %%
 N_particles = 10000
 bunch_intensity = 2.2e11
 normal_emitt_x = 2.5e-6 #m*rad
@@ -100,7 +144,11 @@ gaussian_bunch = xp.generate_matched_gaussian_bunch(
         line = collider['lhcb1'])
 
 # %%
-# We can plot the bunch in the transverse plane
+'''
+Let's plot the bunch in the transverse plane and the histogram of the particles.
+'''
+
+# %%
 starting_x = ctx.nparray_from_context_array(gaussian_bunch.x).copy()
 starting_y = ctx.nparray_from_context_array(gaussian_bunch.y).copy()
 starting_zeta = ctx.nparray_from_context_array(gaussian_bunch.zeta).copy()
@@ -115,7 +163,6 @@ ax.grid()
 plt.tight_layout()
 
 # %%
-#We can plot the histograms of the particles
 fig, ax = plt.subplots(1,3)
 fig.set_size_inches(18.5, 10.5)
 fontsize = 20
@@ -132,13 +179,17 @@ ax[2].grid()
 plt.tight_layout()
 
 # %%
-# We can also track the bunch through the whole line
-# Now we perform more turns
+'''
+Let's track the bunch for 10 turns along the collider.
+
+Then we compare the starting and ending distributions. We will see that the distribution changes, as expected.
+'''
+
+# %%
 N_turns = 10
 collider['lhcb1'].track(gaussian_bunch, num_turns = N_turns)
 
 # %%
-# We can compare the starting and ending distribution
 ending_x = ctx.nparray_from_context_array(gaussian_bunch.x).copy()
 fig, ax = plt.subplots(1,1)
 fig.set_size_inches(18.5, 10.5)
@@ -150,15 +201,20 @@ ax.set_xlabel('x [m]', fontsize = fontsize)
 ax.grid()
 ax.legend()
 plt.tight_layout()
-# The distribution changed, as expected
 
 # %%
-# Sometimes we want to perform studies with frozen longitudinal coordinates
-# Let's start with the twiss in 4d
-# We can do it by specifying method='4d' in the twiss
-# How can this be useful?
-# For example we can study the tune shift with amplitude
-# We want to explore various delta values
+'''
+Sometimes we want to perform studies with frozen longitudinal coordinates.
+
+Let's start with the twiss in 4d: we can do it by specifying method='4d' in the twiss.
+
+How can this be useful?
+
+For example we can study the tune shift with amplitude.
+We want to explore various delta values.
+'''
+
+# %%
 delta_values = np.linspace(-5e-3, 5e-3, 200)
 # We create the tune lists
 qx_values = delta_values * 0
@@ -172,7 +228,11 @@ for i, delta in enumerate(delta_values):
     qy_values[i] = tw4d.qy
 
 # %%
-# We can plot the tune shift with amplitude
+'''
+We can plot the tune shift with amplitude
+'''
+
+# %%
 fig, ax = plt.subplots(2,1)
 fig.set_size_inches(18.5, 10.5)
 fontsize = 20
@@ -190,9 +250,12 @@ ax[1].legend(fontsize = fontsize)
 plt.tight_layout()
 
 # %%
-# We can also freeze the longitudinal coordinates in the tracking
-# We create a particle with longitudinal coordinates different from 0
+'''
+We can also freeze the longitudinal coordinates in the tracking.
+We create a particle with longitudinal coordinates different from 0.
+'''
 
+# %%
 my_particle = xp.Particles(
                     mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, zeta = 0.08, delta = 1e-1)
 print('---------Particle before tracking------')

@@ -7,7 +7,7 @@ import matplotlib.ticker
 import xpart as xp
 import yaml
 import matplotlib.patches as patches
-
+import xobjects as xo
 def plotLatticeSeries(ax, twiss, element_name, series, height=1., v_offset=0., color='r',alpha=0.5):
     aux=series
     ax.add_patch(
@@ -19,6 +19,9 @@ def plotLatticeSeries(ax, twiss, element_name, series, height=1., v_offset=0., c
     )
     )
     return;
+
+# %%
+ctx = xo.ContextCpu()
 
 # %%
 '''
@@ -159,11 +162,15 @@ print(collider.vars['kqt13.r3b1']._find_dependant_targets())
 
 # %%
 '''
-Now we can try to answer the second question.
-Two things are important to understand: 
-- We want a stable lattice;
-- We want a reasonable beta function, so that the beam size is not too big;
-If we plot the stability condition for the FODO cell we get the following:
+Now we can try to answer the second question. A similar treatment of the problem is found in many books, 
+for example in A. Wolski's book.
+
+The idea is to equate the transfer matrix in terms of the FODO lattice parameters (k,L) 
+and the transfer matrix in terms of the beta functions.
+This leads to the following stability condition:
+
+
+
 '''
 
 # %%
@@ -186,9 +193,10 @@ plt.tight_layout()
 
 # %%
 '''
-So the LHC FODO cell provides a pi/2 phase advance.
+So regarding the LHC FODO each cell provides a ~pi/2 phase advance.
 
-For the second condition we want to calculate the beta function 
+From the same equation we can also impose that the beta function maximum and minimum are small enough to avoid the
+beam pipe to be too large. In a FODO cell the average beta function is minimized whern each cell provides a phase advance of pi/2.
 '''
 
 # %%
@@ -201,11 +209,111 @@ betamin_LHC=(1-(x_LHC/4))/(np.sin(2*np.arcsin(x_LHC/4)))
 fig, ax1 = plt.subplots()
 ax1.plot(x,betamax,'-',label=r"$\beta_{max}/L_{cell}$")
 ax1.plot(x,betamin,'-',label=r"$\beta_{min}/L_{cell}$")
-ax1.plot(x_LHC,betamax_LHC, '*', markersize=10, color='red', label='LHC FODO cell betamax')
-ax1.plot(x_LHC,betamin_LHC, '*', markersize=10, color='red', label='LHC FODO cell betamin')
+ax1.plot(x_LHC,betamax_LHC, '*', markersize=10, color='red', label=r'LHC FODO cell $\beta_{max}$')
+ax1.plot(x_LHC,betamin_LHC, '*', markersize=10, color='red', label=r'LHC FODO cell $\beta_{min}$')
 ax1.set_ylabel("[-]", fontsize=16)
 ax1.set_xlabel("$K*L_{quad}*L_{cell}$ [-]", fontsize=16)
 plt.grid()
 plt.legend()
 plt.tick_params(axis='both', labelsize=16)
 plt.tight_layout() 
+
+# %%
+'''
+Now we can try to question ourselves: the arc itself is a periodic structure, `can we find the beta functions`?
+
+To do this we need to build a new line with the arc only. We can do this by using the following:
+'''
+
+# %%
+start = 'mq.15r3.b1_entry'
+end = 'mq.15l4.b1_entry'
+my_line = xt.Line(
+    elements=(collider['lhcb1'].element_dict),
+    element_names=twiss_b1.rows[start:end, ]['name'])
+my_line.build_tracker()
+
+# %%
+'''
+Notice that we skipped the first and last quadrupoles, since they are used to match the beta function 
+at the entrance and exit of the arc and therefore would not give us a periodic solution.
+
+We can twiss (in 4D) the line and plot the beta functions. 
+'''
+
+# %%
+ref = xp.Particles(mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9)
+twiss_b1_line = my_line.twiss(particle_ref=ref, method='4d')
+plt.plot(twiss_b1_line.s,twiss_b1_line.betx, label='betx')
+plt.plot(twiss_b1_line.s,twiss_b1_line.bety, label='bety')
+plt.xlabel('s [m]')
+plt.ylabel('beta [m]')
+plt.grid()
+plt.legend()
+
+# %%
+'''
+Indeed we recovered the periodic solution.
+
+Now something more interesting: can we find the beta functions of the arc by using the tracking?
+
+In Xsuite the twiss is a tracking anyway, so we should be able to do this. 
+
+The procedure is the following:
+- We launch one particle, and since the motion is uncoupled we can directly input a starting x and y coordinate;
+- This particle is tracked for several turns, and this will fill the phase space ellipse in both planes since at each
+turn the particle will reach a slightly different position;
+- At this point from the turn by turn coordinates we can calculate the beta functions via `SVD`.
+'''
+
+# %%
+#We define the function to retrieve the beta functions
+def getbeta(w,pw):
+    U, s ,V = np.linalg.svd([w,pw])
+    N = np.dot(U,np.diag(s))
+    theta = np.arctan2(-N[0,1],N[0,0])
+    R = np.array([[np.cos(theta),np.sin(theta)],[-np.sin(theta),np.cos(theta)]])
+    W = np.dot(N,R)
+    betaw = np.abs(W[0,0]/W[1,1])
+    alfw = W[1,0]/W[1,1]
+    ew = s[0]*s[1]/(len(w))
+    return betaw,alfw,ew
+
+# %%
+x = 1e-6
+y = 1e-6
+aux = xp.Particles(ctx = ctx,mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, x = x, y=y)
+n_turns = 40000
+xs = []
+pxs = []
+ys = []
+pys = []
+for ii in range(n_turns):
+    if(ii%10000==0):
+        print(ii)
+    xs.append(ctx.nparray_from_context_array(aux.x).copy())
+    pxs.append(ctx.nparray_from_context_array(aux.px).copy())
+    ys.append(ctx.nparray_from_context_array(aux.y).copy())
+    pys.append(ctx.nparray_from_context_array(aux.py).copy())
+    my_line.track(aux, num_turns=1)
+xs = np.array(xs)
+pxs = np.array(pxs)
+ys = np.array(ys)
+pys = np.array(pys)
+
+# %%
+plt.plot(xs,pxs,'o')
+betax, alfx, ex = getbeta(xs.reshape(n_turns),pxs.reshape(n_turns))
+print('Tracking betx:',betax,', alfa:',alfx)
+print('Twiss betx:',twiss_b1_line.betx[0],', alfa:',twiss_b1_line.alfx[0])
+plt.plot(ys,pys,'o')
+betay,alfay,ey = getbeta(ys.reshape(n_turns),pys.reshape(n_turns))
+print('Tracking bety:',betay,', alfa:',alfay)
+print('Twiss bety:',twiss_b1_line.bety[0],', alfa:',twiss_b1_line.alfy[0])
+plt.xlabel('x,y [m]')
+plt.ylabel('px,py [rad]')
+plt.grid()
+plt.title('Phase space ellipses')
+
+# %%
+
