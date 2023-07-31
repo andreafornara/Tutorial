@@ -283,14 +283,12 @@ def getbeta(w,pw):
 x = 1e-6
 y = 1e-6
 aux = xp.Particles(ctx = ctx,mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, x = x, y=y)
-n_turns = 40000
+n_turns = 5000
 xs = []
 pxs = []
 ys = []
 pys = []
 for ii in range(n_turns):
-    if(ii%10000==0):
-        print(ii)
     xs.append(ctx.nparray_from_context_array(aux.x).copy())
     pxs.append(ctx.nparray_from_context_array(aux.px).copy())
     ys.append(ctx.nparray_from_context_array(aux.y).copy())
