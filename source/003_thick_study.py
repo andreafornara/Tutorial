@@ -65,9 +65,8 @@ We are now going to look at `ARC34` .
 '''
 
 # %%
-
-fig = plt.figure(figsize=(30,10))
-fontsize = 10
+fig = plt.figure(figsize=(30,25))
+fontsize = 20
 ax1 = plt.subplot2grid((3,3), (0,0), colspan=3, rowspan=1)
 plt.plot(twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'],
          0*twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'],'k')
@@ -79,8 +78,8 @@ for ii in (twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['name']):
         plotLatticeSeries(plt.gca(),twiss_b1, ii, aux, height=k1l, v_offset=k1l/2, color='red')
         # add a label for each quadrupole on top of it with its name
         name = ' '+ii.split('.')[1]+' '
-        plt.gca().text(twiss_b1['s', ii]+28.6, np.abs(k1l)/4, 
-                       name, fontsize=7, color='k', horizontalalignment='center', verticalalignment='center')
+        plt.gca().text(twiss_b1['s', ii], np.abs(k1l)/12, 
+                       name, fontsize=13, color='black', horizontalalignment='center', verticalalignment='center')
 ax1.set_ylabel(r'$K1L$ [1/m]', color='red')
 ax1.tick_params(axis='y', labelcolor='red')
 FODO_cell_length = twiss_b1['s','mq.28l2.b1']-twiss_b1['s','mq.30l2.b1']
@@ -95,7 +94,6 @@ color = 'blue'
 ax2.set_ylabel(r'$\theta$=K0L [mrad]', color=color)
 ax2.tick_params(axis='y', labelcolor=color)
 plt.title('LHC lattice in the ARC 34', fontsize = fontsize)
-plt.xlabel('s [m]', fontsize = fontsize)
 color = 'k'
 ax3 = ax1.twinx() 
 ax3.set_ylim(-200,200)
@@ -104,10 +102,11 @@ plt.gca().plot(twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'],
                twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['betx'],'k',label=r'$\beta_{x}$ function')
 plt.gca().plot(twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['s'],
                twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['bety'],'green',label=r'$\beta_{y}$ function')
-
 ax3.set_ylabel(r'$\beta_{x,y}$ [m]', color=color)
 ax3.tick_params(axis='y', labelcolor=color)
 plt.legend(fontsize = fontsize)
+ax1.set_xlabel('s [m]', fontsize = fontsize)
+plt.grid()
 
 # %%
 '''

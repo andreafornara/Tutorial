@@ -35,7 +35,7 @@ my_dict = collider.lhcb1.to_dict()
 
 # %%
 '''
-#We can look at the attributes and methods of the elements: let's look at the attributes and methods 
+We can look at the attributes and methods of the elements: let's look at the attributes and methods 
 of the one element of the lhcb1 line;
 '''
 
