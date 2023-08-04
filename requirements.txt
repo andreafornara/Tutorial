@@ -13,3 +13,4 @@ xsuite
 pyabel
 ipynb-py-convert
 PyNAFF
+opencv-contrib-python

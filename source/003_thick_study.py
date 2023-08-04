@@ -8,6 +8,33 @@ import xpart as xp
 import yaml
 import matplotlib.patches as patches
 import xobjects as xo
+from scipy.optimize import least_squares
+import cv2
+
+def solve_ellipse_equation(x, px):
+    num_points = len(x)
+    print(len(x))
+    # Create the coefficient matrix A
+    A = np.vstack((x**2, x*px, px**2)).T
+    # Create the constant vector B
+    # Use SVD to solve the overdetermined system of equations
+    U, s, VT = np.linalg.svd(A, full_matrices=False)
+    area = s[0]*s[1]/(len(x))
+    points = np.column_stack((x, px)).astype(np.float32)
+    ellipse = cv2.fitEllipse(points)
+    _, axes, _ = ellipse
+    a = max(axes)
+    b = min(axes)
+    # Calculate the area of the ellipse
+    area = np.pi * a * b
+    B = np.ones(num_points)*np.sqrt(area**2)/np.pi/4
+    V = VT.T
+    S_inv = np.zeros_like(V.T)
+    S_inv[:num_points, :num_points] = np.diag(1.0 / s)
+    coeffs = V @ S_inv @ U.T @ B
+    A_coeff, B_coeff, C_coeff = coeffs
+    return A_coeff, B_coeff/2, C_coeff
+
 def plotLatticeSeries(ax, twiss, element_name, series, height=1., v_offset=0., color='r',alpha=0.5):
     aux=series
     ax.add_patch(
@@ -20,6 +47,54 @@ def plotLatticeSeries(ax, twiss, element_name, series, height=1., v_offset=0., c
     )
     return;
 
+def getbeta(w,pw):
+    U, s, V = np.linalg.svd(np.vstack((w, pw)))
+    N = U@np.diag(s)
+    scaling = np.abs(1/(np.linalg.det(N)))
+    theta = np.arctan2(-N[0,1],N[0,0])
+    c = np.cos(theta)
+    sin = np.sin(theta)
+    R = np.array([[c,sin],[-sin,c]])
+    W = np.dot(N,R)
+    betaw = W[0,0]**2*scaling
+    alfw = -W[1,0]*W[0,0]*scaling
+    return betaw,alfw
+
+def get_normalized_phase_space(x, px, beta, alpha, scale):
+    P = np.array([[np.sqrt(beta), 0],[-alpha/np.sqrt(beta), 1/np.sqrt(beta)]])
+    X =np.array([x,px])
+    return np.linalg.inv(P)@X*scale
+def algebraic_ellipse_fit(x,px):
+    # Algebraic ellipse equation: Ax^2 + Bxy + Cy^2 + Dx + Ey + F = 0
+
+    # Prepare the data for fitting
+    x, y = x, px
+    x2 = x * x
+    y2 = y * y
+    xy = x * y
+    ones = np.ones_like(x)
+
+    # Stack the data to create the coefficient matrix for the ellipse parameters
+    A = np.column_stack((x2, xy, y2, x, y, ones))
+
+    # Function to compute the algebraic equation of the ellipse
+    def ellipse_equation(params, x, y):
+        A, B, C = params
+        return A * x * x + B * x * y + C * y * y  - 3.8662332676249253e-10
+
+    # Initial guess for the ellipse parameters (A, B, C, D, E, F)
+    initial_guess = (1,-2,170)
+
+    # Use least squares to fit the ellipse parameters
+    result = least_squares(ellipse_equation, initial_guess, args=(x, y),ftol = 1e-15, xtol = 1e-15, gtol = 1e-15)
+
+    # Retrieve the optimized parameters
+    A_fit, B_fit, C_fit = result.x
+
+    # Convert the fitted parameters to ellipse parameters (center, axes, and rotation angle)
+    
+
+    return A_fit, B_fit, C_fit
 # %%
 ctx = xo.ContextCpu()
 
@@ -227,6 +302,12 @@ To do this we need to build a new line with the arc only. We can do this by usin
 # %%
 start = 'mq.15r3.b1_entry'
 end = 'mq.15l4.b1_entry'
+collider.vars['i_oct_b1'] = -250
+for ii in (twiss_b1.rows['s.arc.34.b1':'e.arc.34.b1', ]['name']):
+    if((ii.startswith('ms.')) and (ii.endswith('b1'))):
+        collider['lhcb1'].element_dict[ii].knl[2] = 0
+        print(collider['lhcb1'].element_dict[ii])
+# %%
 my_line = xt.Line(
     elements=(collider['lhcb1'].element_dict),
     element_names=twiss_b1.rows[start:end, ]['name'])
@@ -261,56 +342,61 @@ In Xsuite the twiss is a tracking anyway, so we should be able to do this.
 The procedure is the following:
 - We launch one particle, and since the motion is uncoupled we can directly input a starting x and y coordinate;
 - This particle is tracked for several turns, and this will fill the phase space ellipse in both planes since at each
-turn the particle will reach a slightly different position;
+turn the particle will reach a slightly different position (this happens because the tune is not an integer);
 - At this point from the turn by turn coordinates we can calculate the beta functions via `SVD`.
 '''
 
 # %%
-#We define the function to retrieve the beta functions
-def getbeta(w,pw):
-    U, s ,V = np.linalg.svd([w,pw])
-    N = np.dot(U,np.diag(s))
-    theta = np.arctan2(-N[0,1],N[0,0])
-    R = np.array([[np.cos(theta),np.sin(theta)],[-np.sin(theta),np.cos(theta)]])
-    W = np.dot(N,R)
-    betaw = np.abs(W[0,0]/W[1,1])
-    alfw = W[1,0]/W[1,1]
-    ew = s[0]*s[1]/(len(w))
-    return betaw,alfw,ew
-
+betx = twiss_b1_line['betx'][0]
+bety = twiss_b1_line['bety'][0]
+normal_emitt_x = 2.5e-6
+normal_emitt_y = 2.5e-6
+particle_0 = xp.Particles(
+                    mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9)
 # %%
 x = 1e-6
 y = 1e-6
-aux = xp.Particles(ctx = ctx,mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, x = x, y=y)
-n_turns = 5000
+aux = xp.Particles(ctx = ctx,mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, x = x, px = 0, y = y, py = 0)
+
+# %%
+'''
+To define the ellipse we need 5 points, so we need to track the particle for 5 turns.
+'''
+
+# %%
+n_turns = 5
 xs = []
 pxs = []
 ys = []
 pys = []
 for ii in range(n_turns):
-    xs.append(ctx.nparray_from_context_array(aux.x).copy())
-    pxs.append(ctx.nparray_from_context_array(aux.px).copy())
-    ys.append(ctx.nparray_from_context_array(aux.y).copy())
-    pys.append(ctx.nparray_from_context_array(aux.py).copy())
     my_line.track(aux, num_turns=1)
+    xs.append(ctx.nparray_from_context_array(aux.x).copy()[0])
+    pxs.append(ctx.nparray_from_context_array(aux.px).copy()[0])
+    ys.append(ctx.nparray_from_context_array(aux.y).copy()[0])
+    pys.append(ctx.nparray_from_context_array(aux.py).copy()[0])
 xs = np.array(xs)
 pxs = np.array(pxs)
 ys = np.array(ys)
 pys = np.array(pys)
 
 # %%
-plt.plot(xs,pxs,'o')
-betax, alfx, ex = getbeta(xs.reshape(n_turns),pxs.reshape(n_turns))
-print('Tracking betx:',betax,', alfa:',alfx)
-print('Twiss betx:',twiss_b1_line.betx[0],', alfa:',twiss_b1_line.alfx[0])
-plt.plot(ys,pys,'o')
-betay,alfay,ey = getbeta(ys.reshape(n_turns),pys.reshape(n_turns))
-print('Tracking bety:',betay,', alfa:',alfay)
-print('Twiss bety:',twiss_b1_line.bety[0],', alfa:',twiss_b1_line.alfy[0])
-plt.xlabel('x,y [m]')
-plt.ylabel('px,py [rad]')
-plt.grid()
-plt.title('Phase space ellipses')
+'''
+Now we call the solver function, which will return the beta functions and the alpha.
+To do this we need to solve a system of equations, which is done via `SVD`.
+'''
 
 # %%
+gamx_fit, alfx_fit, betx_fit =  solve_ellipse_equation(np.reshape(xs,n_turns),np.reshape(pxs,n_turns))
+gamy_fit, alfy_fit, bety_fit =  solve_ellipse_equation(np.reshape(ys,n_turns),np.reshape(pys,n_turns))
+print('Tracking betx:',betx_fit,', alfa:',alfx_fit)
+print('Twiss betx:',twiss_b1_line.betx[0],', alfa:',twiss_b1_line.alfx[0])
+print('Tracking bety:',bety_fit,', alfa:',alfy_fit)
+print('Twiss bety:',twiss_b1_line.bety[0],', alfa:',twiss_b1_line.alfy[0])
 
+# %%
+'''
+We retrieved the beta functions and the alpha, which are in good agreement with the twiss, and this was all 
+thanks to the tracking. It is remarkable to notice that the tracking is not only a tool to simulate the motion
+of the particles, but it can also be used to retrieve the optics parameters of the machine.
+'''
