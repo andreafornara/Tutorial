@@ -3,6 +3,9 @@ A tutorial to learn a few things about Xsuite.
 
 First of all, you can install your own miniforge with the following command:
 ```
+# we are assuming you are using a bash shell 
+# to check which bash you are using `echo $SHELL`
+# if you are not using bash, please activate it with `/bin/bash` then 
 source install_me.sh
 ```
 This will create a miniforge in the current directory, and install the Xsuite environment.
