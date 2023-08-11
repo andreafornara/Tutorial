@@ -32,4 +32,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git checkout main
           # if there are diff to commit then commit and pull them
-          if [ -n "$(git status --porcelain)" ]; git commit -am "Auto updating the files" && git push; fi
+          if [[ "$(git status --porcelain)" ]]; git commit -am "Auto updating the files" && git push; fi
