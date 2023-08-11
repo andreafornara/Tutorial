@@ -1,11 +1,11 @@
-# convert all python files in the folder in ipynb using ipynb-py-convert
+#check if the py files have been modified with the last commit
+# if yes, convert them to ipynb and move them to the examples folder
+# if not, do nothing
+# if the ipynb files have been modified, run them and save the output
+# if not, do nothing
 for f in *.py; do
-    ipynb-py-convert $f ../examples/${f%.*}.ipynb
-done
-
-
-# for all ipnb in ../examples/ run them
-# Path: source/convert_them.sh
-for f in ../examples/*.ipynb; do
-    jupyter nbconvert --to notebook --execute $f --output $f
+    if [[ $(git diff --name-only HEAD~1 HEAD $f) ]]; then
+        ipynb-py-convert $f ../examples/${f%.*}.ipynb
+        jupyter nbconvert --to notebook --execute ../examples/${f%.*}.ipynb --output ../examples/${f%.*}.ipynb
+    fi
 done
