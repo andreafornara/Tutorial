@@ -12,6 +12,7 @@ with open('../data/collider_thin.json') as f:
 
 line = xt.Line.from_dict(dct['lines']['lhcb1'])
 line_edited =line.copy()
+
 # %%
 my_particle = xp.Particles(
                     mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9)
@@ -19,9 +20,8 @@ line.particle_ref = my_particle
 
 line.build_tracker()
 aux = line.twiss()
+
 # %%
-# perhaps one can do this in a more elegant way
-# for example with dictionaries
 monitors = {}  # Create an empty dictionary to store the monitors
 num_particles = 1
 num_turns = 1
@@ -32,12 +32,12 @@ for jj, ii in enumerate((['ip3']+list(aux[:, 'bpm.*']['name']))):
     line_edited.insert_element(index=ii,
                                 element=monitors[monitor_name], 
                                 name=monitor_name)
+
 # %%
 line_edited.particle_ref = my_particle
 line_edited.build_tracker()
-# %%
-
 line_edited.twiss()[:, 'mymon_.*']
+
 # %%
 particles = xp.Particles(
                     mass0=xp.PROTON_MASS_EV, q0=1, energy0=7000e9, x=-0.001)
