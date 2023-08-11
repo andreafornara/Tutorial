@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -24,11 +26,6 @@ jobs:
         run: |
           cd source
           source convert_them.sh 
-      - name: stage and  changed files
-        run: |
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git checkout main
-          git commit -am "Auto updating the files"
-      - name: push
-        run: git push
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Auto-Commit-Action

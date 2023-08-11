@@ -44,6 +44,7 @@ particles = xp.Particles(
 line_edited.track(particles, num_turns=num_turns)
 
 # %%
+
 s_list = [monitors[ii].s[0,0] for ii in monitors]
 x_list = [monitors[ii].x[0,0] for ii in monitors]
-plt.plot(s_list, x_list, '.-b')
+plt.plot(s_list, x_list, '.-r')
