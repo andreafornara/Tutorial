@@ -40,7 +40,7 @@ of the one element of the lhcb1 line;
 '''
 
 # %%
-collider.lhcb1.to_dict()['elements']['mqwa.a4r3.b1..1']
+my_dict['elements']['mqwa.a4r3.b1..1']
 
 # %%
 '''
